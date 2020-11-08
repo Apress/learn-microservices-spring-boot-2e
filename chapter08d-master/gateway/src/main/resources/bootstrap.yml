@@ -1,0 +1,11 @@
+spring:
+  cloud:
+    consul:
+      config:
+        data-key: application.yml
+        prefix: config
+        format: yaml
+        default-context: defaults
+logging:
+  level:
+    org.springframework.amqp.rabbit.connection.CachingConnectionFactory: WARN

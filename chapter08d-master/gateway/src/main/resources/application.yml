@@ -1,0 +1,45 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    loadbalancer:
+      ribbon:
+        # Not needed since we excluded the dependency
+        enabled: false
+    consul:
+      enabled: true
+      discovery:
+        # Get only services that are passing the health check
+        query-passing: true
+    gateway:
+      routes:
+        - id: multiplication
+          uri: lb://multiplication/
+          predicates:
+            - Path=/challenges/**,/attempts,/attempts/**,/users/**
+        - id: gamification
+          uri: lb://gamification/
+          predicates:
+            - Path=/leaders
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedHeaders:
+              - "*"
+            allowedMethods:
+              - "GET"
+              - "POST"
+              - "OPTIONS"
+      default-filters:
+        - name: Retry
+          args:
+            retries: 3
+            methods: GET,POST
+# Uncomment the configuration below if you want to enable route matching logs
+#logging:
+#  level:
+#    org.springframework.cloud.gateway.handler.predicate: trace

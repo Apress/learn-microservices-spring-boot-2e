@@ -1,0 +1,29 @@
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <springProperty scope="context" name="rabbitMQHost" source="spring.rabbitmq.host"/>
+
+    <appender name="AMQP"
+              class="org.springframework.amqp.rabbit.logback.AmqpAppender">
+        <layout>
+            <pattern>%d{HH:mm:ss.SSS} [%t] %logger{36} - %msg</pattern>
+        </layout>
+
+        <applicationId>gamification</applicationId>
+        <host>${rabbitMQHost:-localhost}</host>
+        <routingKeyPattern>%property{applicationId}.%p</routingKeyPattern>
+        <exchangeName>logs.topic</exchangeName>
+        <generateId>true</generateId>
+        <charset>UTF-8</charset>
+        <durable>true</durable>
+        <declareExchange>true</declareExchange>
+        <deliveryMode>PERSISTENT</deliveryMode>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="AMQP" />
+    </root>
+</configuration>
